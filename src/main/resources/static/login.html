@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login · Sistema Catraca</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Syne', sans-serif;
+            background: #0a0a0f;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Grid animado no fundo */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                    linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0%   { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+
+        /* Brilho central */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0,229,255,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .card {
+            position: relative;
+            z-index: 1;
+            background: #12121a;
+            border: 1px solid #1e1e2e;
+            border-radius: 20px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+            animation: fadeUp 0.6s ease;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 20%; right: 20%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00e5ff, transparent);
+            border-radius: 50%;
+        }
+
+        .icon {
+            font-size: 40px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #fff 40%, #00e5ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub {
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: #64748b;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 36px;
+        }
+
+        .campo {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0a0a0f;
+            border: 1px solid #1e1e2e;
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-family: 'Space Mono', monospace;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #00e5ff;
+            box-shadow: 0 0 0 3px rgba(0,229,255,0.1);
+        }
+
+        .erro {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #00e5ff;
+            color: #0a0a0f;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,229,255,0.3);
+        }
+
+        button:active { transform: translateY(0); }
+
+        .footer {
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: #2e2e3e;
+            margin-top: 32px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="icon">🚧</div>
+    <h1>Sistema Catraca</h1>
+    <p class="sub">// acesso restrito</p>
+
+    <div class="erro" id="erro">Usuário ou senha incorretos!</div>
+
+    <div class="campo">
+        <label>Usuário</label>
+        <input type="text" id="usuario" placeholder="admin" autofocus>
+    </div>
+
+    <div class="campo">
+        <label>Senha</label>
+        <input type="password" id="senha" placeholder="••••••••" onkeydown="if(event.key==='Enter') entrar()">
+    </div>
+
+    <button onclick="entrar()">Entrar →</button>
+
+    <p class="footer">Sistema Catraca QR Code © 2026</p>
+</div>
+
+<script>
+    // Verifica se já tem credenciais salvas
+    window.onload = () => {
+        const creds = sessionStorage.getItem('creds');
+        if (creds) {
+            // Testa se ainda são válidas
+            fetch('http://localhost:8080/usuarios', {
+                headers: { 'Authorization': 'Basic ' + creds }
+            }).then(res => {
+                if (res.ok) window.location.href = '/index.html';
+            });
+        }
+    };
+
+    async function entrar() {
+        const usuario = document.getElementById('usuario').value;
+        const senha   = document.getElementById('senha').value;
+
+        if (!usuario || !senha) {
+            mostrarErro();
+            return;
+        }
+
+        // Codifica em Base64 para Basic Auth
+        const creds = btoa(usuario + ':' + senha);
+
+        const res = await fetch('http://localhost:8080/usuarios', {
+            headers: { 'Authorization': 'Basic ' + creds }
+        });
+
+        if (res.ok) {
+            // Salva as credenciais na sessão e vai pro sistema
+            sessionStorage.setItem('creds', creds);
+            window.location.href = '/index.html';
+        } else {
+            mostrarErro();
+        }
+    }
+
+    function mostrarErro() {
+        const el = document.getElementById('erro');
+        el.style.display = 'block';
+        setTimeout(() => el.style.display = 'none', 3000);
+    }
+</script>
+
+</body>
+</html>

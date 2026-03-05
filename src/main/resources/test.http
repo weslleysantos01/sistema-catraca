@@ -1,0 +1,17 @@
+### Listar usuários
+GET http://localhost:8080/usuarios
+
+### Cadastrar usuário
+POST http://localhost:8080/usuarios
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "cpf": "123.456.789-00"
+}
+
+### Desativar usuário
+### Desativar usuário
+PUT http://localhost:8080/usuarios/desativar?cpf=144666888
+### Validar acesso na catraca
+POST http://localhost:8080/usuarios/validar?id=5e729185-e494-4876-9896-02ccfc4010a0

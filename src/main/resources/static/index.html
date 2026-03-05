@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Catraca</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0a0a0f;
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 40px;
+            color: #00e5ff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .card {
+            background: #12121a;
+            border: 1px solid #1e1e2e;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #00e5ff;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 14px;
+            background: #1e1e2e;
+            border: 1px solid #2e2e3e;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            background: #00e5ff;
+            color: #0a0a0f;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover { opacity: 0.8; }
+
+        .resultado {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .sucesso { background: rgba(16,185,129,0.15); border: 1px solid #10b981; color: #10b981; }
+        .erro    { background: rgba(239,68,68,0.15);  border: 1px solid #ef4444; color: #ef4444; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #1e1e2e;
+            color: #64748b;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #1e1e2e;
+            font-size: 14px;
+        }
+
+        .ativo   { color: #10b981; }
+        .inativo { color: #ef4444; }
+
+        .qrcode-box {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            padding: 20px;
+            background: #1e1e2e;
+            border-radius: 12px;
+        }
+
+        .qrcode-box img {
+            border-radius: 8px;
+            width: 200px;
+            height: 200px;
+        }
+
+        .qrcode-box a {
+            color: #00e5ff;
+            font-size: 13px;
+            text-decoration: none;
+            border: 1px solid #00e5ff;
+            padding: 8px 20px;
+            border-radius: 8px;
+        }
+
+        .qrcode-box a:hover { background: rgba(0,229,255,0.1); }
+
+        .logout {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            padding: 8px 18px;
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .logout:hover {
+            background: rgba(239,68,68,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<button class="logout" onclick="sair()">Sair →</button>
+
+<h1>🚧 Sistema Catraca</h1>
+
+<div class="container">
+
+    <!-- Cadastrar -->
+    <div class="card">
+        <h2>👤 Cadastrar Usuário</h2>
+        <input type="text" id="nome" placeholder="Nome completo">
+        <input type="text" id="cpf" placeholder="CPF">
+        <button onclick="cadastrar()">Cadastrar</button>
+        <div class="resultado" id="res-cadastrar"></div>
+        <div class="qrcode-box" id="qrcode-box">
+            <p style="color:#64748b;font-size:13px">QR Code gerado:</p>
+            <img id="qrcode-img" src="" alt="QR Code">
+            <a id="qrcode-download" download="qrcode.png">⬇ Baixar QR Code</a>
+        </div>
+    </div>
+
+    <!-- Listar -->
+    <div class="card">
+        <h2>📋 Usuários Cadastrados</h2>
+        <button onclick="listar()">Atualizar lista</button>
+        <table>
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Status</th>
+                <th>QR Code</th>
+            </tr>
+            </thead>
+            <tbody id="tabela-usuarios"></tbody>
+        </table>
+    </div>
+
+    <!-- Desativar -->
+    <div class="card">
+        <h2>🚫 Desativar Usuário</h2>
+        <input type="text" id="cpf-desativar" placeholder="CPF do usuário">
+        <button onclick="desativar()">Desativar</button>
+        <div class="resultado" id="res-desativar"></div>
+    </div>
+
+    <!-- Validar -->
+    <div class="card">
+        <h2>🔍 Validar Acesso</h2>
+        <input type="text" id="id-validar" placeholder="Cole o ID do QR Code">
+        <button onclick="validar()">Validar</button>
+        <div class="resultado" id="res-validar"></div>
+    </div>
+
+    <!-- Histórico -->
+    <div class="card">
+        <h2>📊 Histórico de Acessos</h2>
+        <button onclick="carregarHistorico()">Atualizar histórico</button>
+        <table>
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Data/Hora</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody id="tabela-historico"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    const API = 'http://localhost:8080';
+
+    const creds = sessionStorage.getItem('creds');
+    if (!creds) window.location.href = '/login.html';
+
+    function headers() {
+        return {
+            'Authorization': 'Basic ' + creds,
+            'Content-Type': 'application/json'
+        };
+    }
+
+    function mostrar(id, msg, sucesso) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.className = 'resultado ' + (sucesso ? 'sucesso' : 'erro');
+        el.style.display = 'block';
+    }
+
+    function sair() {
+        sessionStorage.removeItem('creds');
+        window.location.href = '/login.html';
+    }
+
+    async function cadastrar() {
+        const nome = document.getElementById('nome').value;
+        const cpf  = document.getElementById('cpf').value;
+
+        const res = await fetch(`${API}/usuarios`, {
+            method: 'POST',
+            headers: headers(),
+            body: JSON.stringify({ nome, cpf })
+        });
+
+        if (res.ok) {
+            const u = await res.json();
+            mostrar('res-cadastrar', '✅ Usuário cadastrado! ID: ' + u.id, true);
+
+            const qrUrl = `${API}/qrcode/${u.id}`;
+            const box   = document.getElementById('qrcode-box');
+            const img   = document.getElementById('qrcode-img');
+            const link  = document.getElementById('qrcode-download');
+
+            img.src   = qrUrl;
+            link.href = qrUrl;
+            box.style.display = 'flex';
+
+            listar();
+        } else {
+            mostrar('res-cadastrar', '❌ Erro ao cadastrar!', false);
+        }
+    }
+
+    async function listar() {
+        const res  = await fetch(`${API}/usuarios`, { headers: headers() });
+        const list = await res.json();
+        const tbody = document.getElementById('tabela-usuarios');
+
+        tbody.innerHTML = list.map(u => `
+            <tr>
+                <td>${u.nome}</td>
+                <td>${u.cpf}</td>
+                <td class="${u.ativo ? 'ativo' : 'inativo'}">${u.ativo ? '✅ Ativo' : '❌ Inativo'}</td>
+                <td><a href="${API}/qrcode/${u.id}" target="_blank" style="color:#00e5ff">Ver QR</a></td>
+            </tr>
+        `).join('');
+    }
+
+    async function desativar() {
+        const cpf = document.getElementById('cpf-desativar').value;
+        const res = await fetch(`${API}/usuarios/desativar?cpf=${cpf}`, {
+            method: 'PUT',
+            headers: headers()
+        });
+
+        if (res.ok) {
+            mostrar('res-desativar', '✅ Usuário desativado!', true);
+            listar();
+        } else {
+            mostrar('res-desativar', '❌ Usuário não encontrado!', false);
+        }
+    }
+
+    async function validar() {
+        const id  = document.getElementById('id-validar').value;
+        const res = await fetch(`${API}/usuarios/validar?id=${id}`, {
+            method: 'POST',
+            headers: headers()
+        });
+        const msg = await res.text();
+        mostrar('res-validar', msg, res.ok);
+        carregarHistorico();
+    }
+
+    async function carregarHistorico() {
+        const res  = await fetch(`${API}/usuarios/historico`, { headers: headers() });
+        const list = await res.json();
+        const tbody = document.getElementById('tabela-historico');
+
+        tbody.innerHTML = list.map(a => `
+            <tr>
+                <td>${a.usuarioNome}</td>
+                <td>${new Date(a.dataHora).toLocaleString('pt-BR')}</td>
+                <td class="${a.autorizado ? 'ativo' : 'inativo'}">${a.autorizado ? '✅ Liberado' : '❌ Bloqueado'}</td>
+            </tr>
+        `).join('');
+    }
+
+    listar();
+    carregarHistorico();
+</script>
+
+</body>
+</html>

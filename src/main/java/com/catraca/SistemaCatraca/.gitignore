@@ -1,0 +1,13 @@
+# Nunca sobe pro GitHub!
+.env
+
+# Arquivos gerados
+target/
+*.class
+
+# IntelliJ
+.idea/
+*.iml
+
+# QR Codes gerados
+qrcodes/
